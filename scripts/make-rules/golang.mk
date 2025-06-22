@@ -36,7 +36,7 @@ else
 endif
 
 # Available cpus for compiling, please refer to https://github.com/caicloud/engineering/issues/8186#issuecomment-518656946 for more info
-CPUS := $(shell /bin/bash $(ONEX_ROOT)/scripts/read_cpus_available.sh)
+CPUS := $(shell /bin/bash $(ONEX_ROOT)/scripts/read_cpus_available.sh 2>/dev/null || nproc 2>/dev/null || echo "2")
 
 # Default golang flags used in build and test
 # -p: the number of programs that can be run in parallel
