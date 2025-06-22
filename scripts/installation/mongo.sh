@@ -49,7 +49,7 @@ onex::mongo::pre_install()
   onex::util::sudo "apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 9DA31620334BD75D9DCB7682A6C6829CD5F64D07"
 
   # 添加 MongoDB APT 源
-  onex::util::sudo "sh -c 'echo \"deb [arch=amd64,arm64] https://repo.mongodb.org/apt/debian $(lsb_release -cs)/mongodb-org/7.0 main\" > /etc/apt/sources.list.d/mongodb-org-7.0.list'"
+  onex::util::sudo "sh -c 'echo \"deb [arch=amd64,arm64] https://repo.mongodb.org/apt/ubuntu $(lsb_release -cs)/mongodb-org/6.0 main\" > /etc/apt/sources.list.d/mongodb-org-6.0.list'"
 
   # 检查并安装 libssl1.1
   if ! onex::util::sudo "apt list --installed libssl1.1 2>/dev/null | grep -q libssl1.1"; then
