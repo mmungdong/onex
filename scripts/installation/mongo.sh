@@ -43,25 +43,20 @@ onex::mongo::docker::install()
 }
 
 
-onex::mongo::pre_install()
-{
-  # 更安全的方式获取 MongoDB 公钥
-  onex::util::sudo "apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 9DA31620334BD75D9DCB7682A6C6829CD5F64D07"
+onex::mongo::preinstall() {
+  # 清除旧配置
+  sudo rm /etc/apt/sources.list.d/mongodb-org-*.list 2>/dev/null
+  sudo rm /etc/apt/trusted.gpg.d/mongodb-org-*.gpg 2>/dev/null
 
-  # 添加 MongoDB APT 源
-  onex::util::sudo "sh -c 'echo \"deb [arch=amd64,arm64] https://repo.mongodb.org/apt/ubuntu $(lsb_release -cs)/mongodb-org/6.0 main\" > /etc/apt/sources.list.d/mongodb-org-6.0.list'"
+  # 添加正确仓库（Ubuntu Jammy）
+  echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
 
-  # 检查并安装 libssl1.1
-  if ! onex::util::sudo "apt list --installed libssl1.1 2>/dev/null | grep -q libssl1.1"; then
-    onex::util::sudo "apt update"
-    onex::util::sudo "apt install -y libssl1.1"
-  fi
+  # 导入密钥
+  wget -qO- https://www.mongodb.org/static/pgp/server-6.0.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/mongodb-org-6.0.gpg
 
-  # 更新包列表
-  onex::util::sudo "apt update"
-
-  # 安装 MongoDB 客户端
-  onex::util::sudo "apt install -y mongodb-mongosh"
+  # 更新并安装
+  sudo apt update -o Acquire::Check-Valid-Until=false
+  sudo apt install -y mongodb-mongosh
 }
 
 
