@@ -43,7 +43,7 @@ onex::mongo::docker::install()
 }
 
 
-onex::mongo::preinstall() {
+onex::mongo::pre_install() {
   # 清除旧配置
   sudo rm /etc/apt/sources.list.d/mongodb-org-*.list 2>/dev/null
   sudo rm /etc/apt/trusted.gpg.d/mongodb-org-*.gpg 2>/dev/null
