@@ -45,18 +45,25 @@ onex::mongo::docker::install()
 
 onex::mongo::pre_install()
 {
-  # 清除旧配置
-  sudo rm /etc/apt/sources.list.d/mongodb-org-*.list 2>/dev/null
-  sudo rm /etc/apt/trusted.gpg.d/mongodb-org-*.gpg 2>/dev/null
+  # 1. 清理旧的配置
+  sudo rm -f /etc/apt/sources.list.d/mongodb-org-*.list
+  sudo rm -f /etc/apt/trusted.gpg.d/mongodb-org-*.gpg
+  sudo rm -f /usr/share/keyrings/mongodb-server-*.gpg
 
-  # 添加正确仓库（Ubuntu Jammy）
-  echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+  # 2. 手动添加密钥和仓库
+  curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | \
+  sudo gpg --dearmor -o /usr/share/keyrings/mongodb-server-7.0.gpg
 
-  # 导入密钥
-  wget -qO- https://www.mongodb.org/static/pgp/server-7.0.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/mongodb-org-7.0.gpg
+  # 3. 获取你的 Ubuntu 版本
+  UBUNTU_CODENAME=$(lsb_release -cs)
+  echo "Your Ubuntu codename: $UBUNTU_CODENAME"
 
-  # 更新并安装
-  sudo apt update -o Acquire::Check-Valid-Until=false
+  # 4. 根据版本添加仓库
+  echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | \
+  sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+
+  # 5. 更新并安装
+  sudo apt update
   sudo apt install -y mongodb-mongosh
 }
 
