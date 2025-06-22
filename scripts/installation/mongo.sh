@@ -50,7 +50,7 @@ onex::mongo::pre_install()
   sudo rm /etc/apt/trusted.gpg.d/mongodb-org-*.gpg 2>/dev/null
 
   # 添加正确仓库（Ubuntu Jammy）
-  echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+  echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
 
   # 导入密钥
   wget -qO- https://www.mongodb.org/static/pgp/server-7.0.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/mongodb-org-7.0.gpg
