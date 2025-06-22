@@ -45,22 +45,25 @@ onex::mongo::docker::install()
 
 onex::mongo::pre_install()
 {
-  # 获取 MongoDB 公钥
-  echo ${LINUX_PASSWORD} | sudo -S wget -qO - https://www.mongodb.org/static/pgp/server-7.0.asc | sudo apt-key add -
+  # 更安全的方式获取 MongoDB 公钥
+  onex::util::sudo "apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 9DA31620334BD75D9DCB7682A6C6829CD5F64D07"
 
   # 添加 MongoDB APT 源
-  echo ${LINUX_PASSWORD} | sudo -S echo "deb [arch=amd64,arm64] https://repo.mongodb.org/apt/debian $(lsb_release -cs)/mongodb-org/7.0 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+  onex::util::sudo "sh -c 'echo \"deb [arch=amd64,arm64] https://repo.mongodb.org/apt/debian $(lsb_release -cs)/mongodb-org/7.0 main\" > /etc/apt/sources.list.d/mongodb-org-7.0.list'"
 
-  # 安装libssl1.1，否则安装 mongo 时会报以下错误：
-  # mongodb-org-mongos : Depends: libssl1.1 (>= 1.1.1) but it is not installable
-  wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb -P /tmp/
-  echo ${LINUX_PASSWORD} | sudo -S -i dpkg -i /tmp/libssl1.1_1.1.1f-1ubuntu2_amd64.deb
+  # 检查并安装 libssl1.1
+  if ! onex::util::sudo "apt list --installed libssl1.1 2>/dev/null | grep -q libssl1.1"; then
+    onex::util::sudo "apt update"
+    onex::util::sudo "apt install -y libssl1.1"
+  fi
 
+  # 更新包列表
   onex::util::sudo "apt update"
 
   # 安装 MongoDB 客户端
   onex::util::sudo "apt install -y mongodb-mongosh"
 }
+
 
 # Uninstall the docker container.
 onex::mongo::docker::uninstall()
